@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VELORI SHOP — магазин одежды</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-widget.js?22"></script>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eceef1;--ink:#12161c;--mute:#5c6470;--card:#fff;--line:#d3d8df;--acc:#2f5bff;--accink:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141a;--ink:#eef0f3;--mute:#9aa3b0;--card:#1a2029;--line:#2a323d;--acc:#6c8cff;--accink:#0b1020;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141a;--ink:#eef0f3;--mute:#9aa3b0;--card:#1a2029;--line:#2a323d;--acc:#6c8cff;--accink:#0b1020;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Manrope,system-ui,sans-serif}
+h1,h2,.logo{font-family:Unbounded,Arial Black,sans-serif;font-weight:700;letter-spacing:-.02em}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 5vw;border-bottom:1px solid var(--line)}
+.logo{font-size:22px}
+button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cartbtn{background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600}
+.hero{padding:9vh 5vw 6vh;max-width:1200px}
+.hero h1{font-size:clamp(34px,8vw,84px);line-height:1;margin:0 0 20px}
+.hero p{max-width:46ch;color:var(--mute);margin:0 0 24px}
+.cta{background:var(--acc);color:var(--accink);padding:14px 24px;border-radius:10px;font-weight:600;display:inline-block;text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;padding:0 5vw 20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;padding:0 5vw 60px}
+.card{background:var(--card);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.pic{aspect-ratio:4/5;display:flex;align-items:flex-end;padding:14px;font:700 28px/1 Unbounded,sans-serif;color:rgba(255,255,255,.92)}
+.info{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1}
+.info h2{font-size:15px;margin:0;font-family:Manrope,sans-serif;font-weight:600;letter-spacing:0}
+.price{font-weight:600}
+.sizes{display:flex;gap:6px;flex-wrap:wrap}
+.sz{min-width:36px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font-size:14px}
+.sz[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--accink)}
+.add{margin-top:auto;background:var(--ink);color:var(--bg);padding:11px;border-radius:8px;font-weight:600}
+.empty{padding:40px 5vw;color:var(--mute)}
+aside{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding:calc(16px + env(safe-area-inset-top,0px)) 20px calc(16px + env(safe-area-inset-bottom,0px));z-index:20}
+aside.open{transform:none}
+.ahead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ahead h2{margin:0;font-size:20px}
+.items{flex:1;overflow:auto}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row small{color:var(--mute)}
+.qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+.qty button{width:28px;height:28px;border:1px solid var(--line);border-radius:6px}
+form{display:grid;gap:8px;padding-top:12px}
+input{padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.total{display:flex;justify-content:space-between;font-weight:600;padding-top:12px}
+.send{background:var(--acc);color:var(--accink);padding:13px;border-radius:8px;font-weight:600}
+.send:disabled{opacity:.4;cursor:not-allowed}
+footer{padding:30px 5vw;color:var(--mute);border-top:1px solid var(--line);font-size:14px}
+.hr{display:flex;gap:8px;align-items:center}
+.userbtn{border:1px solid var(--line);background:var(--card);padding:9px 14px;border-radius:999px;font-weight:600;display:flex;gap:8px;align-items:center;max-width:44vw}
+.userbtn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ava{width:22px;height:22px;border-radius:50%;background:var(--acc);color:var(--accink);display:grid;place-items:center;font-size:12px;flex:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+.ov.open{display:flex}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;width:100%;max-width:360px;text-align:center;display:grid;gap:10px}
+.mcard h2{margin:0;font-size:18px}
+.mcard p{margin:0;color:var(--mute);font-size:14px}
+.ghost{color:var(--mute);padding:8px;font-size:14px}
+.gate{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;align-items:center;justify-content:center;padding:24px;overflow:auto}
+body.locked .gate{display:flex}
+body.locked{overflow:hidden}
+.gcard{width:100%;max-width:380px;display:grid;gap:12px;text-align:center}
+.gcard .logo{font-size:24px;margin-bottom:18px}
+.gcard h1{font-size:clamp(24px,6vw,32px);margin:0}
+.gcard p{margin:0 0 14px;color:var(--mute)}
+.sso{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-weight:600;font-size:16px}
+.sso:hover{border-color:var(--ink)}
+.sso svg{width:22px;height:22px;flex:none}
+.gerr{color:#d92d20;font-size:14px;min-height:1.4em;margin:0!important}
+.gcard small{color:var(--mute);font-size:12px}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+</style>
+</head>
+<body class="locked">
+<header><div class="logo">VELORI SHOP</div><div class="hr"><button class="userbtn" id="ubtn"><span class="ava" id="uava">?</span><span id="uname">Войти</span></button><button class="cartbtn" id="open">Корзина · <span id="cnt">0</span></button></div></header>
+<section class="hero">
+<h1>Одежда на каждый день</h1>
+<p>Базовые вещи из плотного хлопка и флиса. Выберите размер, добавьте в корзину — мы свяжемся в Telegram и подтвердим заказ.</p>
+<a class="cta" href="#catalog">Смотреть каталог</a>
+</section>
+<div class="bar" id="catalog">
+<div class="chips" id="chips"></div>
+<select id="sort" aria-label="Сортировка"><option value="0">По умолчанию</option><option value="1">Сначала дешёвые</option><option value="2">Сначала дорогие</option></select>
+</div>
+<main class="grid" id="grid"></main>
+<footer>VELORI SHOP · Доставка по Узбекистану · Оплата при получении · Telegram: @Kiyomi_g</footer>
+
+<aside id="cart" aria-label="Корзина">
+<div class="ahead"><h2>Корзина</h2><button id="close" aria-label="Закрыть">✕</button></div>
+<div class="items" id="items"></div>
+<div class="total"><span>Итого</span><span id="sum">0</span></div>
+<form id="f">
+<input id="nm" placeholder="Ваше имя" required autocomplete="name">
+<input id="ph" placeholder="Телефон" required autocomplete="tel" inputmode="tel">
+<button class="send" id="go" disabled>Оформить заказ</button>
+<div id="fb"></div>
+</form>
+</aside>
+
+<div class="gate" id="gate">
+<div class="gcard">
+ <div class="logo">VELORI SHOP</div>
+ <h1 id="gh">Добро пожаловать</h1>
+ <p id="gsub">Войдите через Telegram, чтобы смотреть каталог и оформлять заказы</p>
+ <div id="gs1" style="display:grid;gap:12px"> <button class="sso" id="gt" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#24a1de"/><path fill="#fff" d="M5.4 11.8l11.6-4.5c.5-.2 1 .1.8.9l-2 9.3c-.1.6-.5.8-1 .5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3 5.5-5c.2-.2 0-.3-.4-.1l-6.8 4.3-2.9-.9c-.6-.2-.6-.6.1-.9z"/></svg><span>Продолжить с Telegram</span></button>
+  </div>
+ <div id="gs2" style="display:none;gap:12px">
+  <button class="sso" id="gshare" type="button" style="display:none"><span>Поделиться номером из Telegram</span></button>
+  <input id="gphone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67" style="text-align:center">
+  <button class="send" id="gsave" type="button" style="border-radius:999px;padding:14px">Продолжить</button>
+ </div>
+ <p class="gerr" id="gerr" role="alert"></p>
+ <small>Имя и номер используются только для оформления заказа</small>
+</div></div>
+
+<div class="ov" id="profov" role="dialog" aria-modal="true" aria-label="Профиль">
+<div class="mcard">
+ <h2 id="pname"></h2><p id="pinfo"></p>
+ <button class="send" id="logout" type="button">Выйти</button>
+ <button class="ghost" id="pclose" type="button">Закрыть</button>
+</div></div>
+
+<script>
+const TG="Kiyomi_g"; // замените на ваш Telegram-username
+const P=[
+{id:1,n:"Футболка Basic",c:"Футболки",p:129000,s:["S","M","L","XL"],k:"#2f5bff"},
+{id:2,n:"Футболка Oversize",c:"Футболки",p:159000,s:["M","L","XL"],k:"#1f7a5c"},
+{id:3,n:"Худи Heavy",c:"Худи",p:329000,s:["S","M","L","XL"],k:"#8a3ffc"},
+{id:4,n:"Худи на молнии",c:"Худи",p:359000,s:["M","L","XL"],k:"#c2410c"},
+{id:5,n:"Свитшот Crew",c:"Худи",p:279000,s:["S","M","L"],k:"#0f766e"},
+{id:6,n:"Джинсы Straight",c:"Брюки",p:319000,s:["30","32","34","36"],k:"#334e7a"},
+{id:7,n:"Карго Utility",c:"Брюки",p:349000,s:["30","32","34"],k:"#5b6b3a"},
+{id:8,n:"Джоггеры Fleece",c:"Брюки",p:239000,s:["S","M","L","XL"],k:"#444b57"},
+{id:9,n:"Куртка Windbreaker",c:"Верхняя одежда",p:489000,s:["M","L","XL"],k:"#b4234a"},
+{id:10,n:"Пуховик Short",c:"Верхняя одежда",p:699000,s:["S","M","L"],k:"#1d3557"},
+{id:11,n:"Кепка Logo",c:"Аксессуары",p:89000,s:["One"],k:"#9a6b00"},
+{id:12,n:"Шарф Wool",c:"Аксессуары",p:119000,s:["One"],k:"#6b2d5c"}];
+const $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("ru-RU")+" сум";
+let cat="Все", cart=[], pick={};
+try{cart=JSON.parse(localStorage.getItem("velori_cart")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("velori_cart",JSON.stringify(cart))}catch(e){}};
+const cats=["Все",...new Set(P.map(x=>x.c))];
+function chips(){$("chips").innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("")}
+function grid(){
+ let l=P.filter(x=>cat==="Все"||x.c===cat); const s=$("sort").value;
+ if(s==="1")l.sort((a,b)=>a.p-b.p); if(s==="2")l.sort((a,b)=>b.p-a.p);
+ $("grid").innerHTML=l.map(x=>`<article class="card"><div class="pic" style="background:${x.k}">${x.c==="Аксессуары"?"":x.n.split(" ")[0]}${x.c==="Аксессуары"?x.n.split(" ")[0]:""}</div>
+ <div class="info"><h2>${x.n}</h2><div class="price">${fmt(x.p)}</div>
+ <div class="sizes">${x.s.map(z=>`<button class="sz" data-id="${x.id}" data-z="${z}" aria-pressed="${(pick[x.id]||(x.s.length===1?x.s[0]:""))===z}">${z}</button>`).join("")}</div>
+ <button class="add" data-add="${x.id}">В корзину</button></div></article>`).join("");
+}
+function render(){
+ const n=cart.reduce((a,b)=>a+b.q,0), t=cart.reduce((a,b)=>a+b.q*b.p,0);
+ $("cnt").textContent=n; $("sum").textContent=fmt(t); $("go").disabled=!n;
+ $("items").innerHTML=cart.length?cart.map((x,i)=>`<div class="row"><div><strong>${x.n}</strong><br><small>Размер ${x.z} · ${fmt(x.p)}</small>
+ <div class="qty"><button data-m="${i}" aria-label="Меньше">−</button>${x.q}<button data-pl="${i}" aria-label="Больше">+</button></div></div>
+ <button data-rm="${i}" aria-label="Удалить">✕</button></div>`).join(""):`<p class="empty" style="padding:20px 0">Корзина пуста. Выберите размер и нажмите «В корзину».</p>`;
+ save();
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("button"); if(!t)return;
+ if(t.dataset.c){cat=t.dataset.c;chips();grid()}
+ else if(t.dataset.z){pick[t.dataset.id]=t.dataset.z;grid()}
+ else if(t.dataset.add){
+  const p=P.find(x=>x.id==t.dataset.add), z=pick[p.id]||(p.s.length===1?p.s[0]:"");
+  if(!z){alert("Сначала выберите размер");return}
+  const f=cart.find(x=>x.id===p.id&&x.z===z); f?f.q++:cart.push({id:p.id,n:p.n,p:p.p,z,q:1});
+  render();$("cart").classList.add("open");
+ }
+ else if(t.dataset.pl){cart[t.dataset.pl].q++;render()}
+ else if(t.dataset.m){const i=t.dataset.m;cart[i].q--;if(cart[i].q<1)cart.splice(i,1);render()}
+ else if(t.dataset.rm){cart.splice(t.dataset.rm,1);render()}
+});
+$("sort").onchange=grid;
+$("open").onclick=()=>$("cart").classList.add("open");
+$("close").onclick=()=>$("cart").classList.remove("open");
+$("f").onsubmit=async e=>{
+ e.preventDefault(); if(!cart.length)return;
+ const fb=$("fb"), btn=$("go");
+ const phone=normPhone($("ph").value);
+ const say=(m,ok)=>{fb.innerHTML="";const p=document.createElement("p");p.style.cssText="margin:6px 0;font-size:14px;color:"+(ok?"var(--ink)":"#d92d20");p.textContent=m;fb.appendChild(p)};
+ if(!phone)return say("Введите номер полностью, например +998 90 123 45 67");
+ const body={name:$("nm").value.trim(),phone,items:cart.map(x=>({id:x.id,z:x.z,q:x.q})),account:user?`${user.name} (${user.id})`:"",init_data:(tg&&tg.initData)||""};
+ btn.disabled=true; btn.textContent="Отправляем…"; say("");
+ try{
+  const r=await fetch("/api/order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(r.ok&&j.ok){cart=[];render();say(`Заказ №${j.id} принят! Мы свяжемся с вами в Telegram.`,true)}
+  else say(j.error||"Не удалось отправить заказ. Попробуйте ещё раз.");
+ }catch(x){say("Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.")}
+ finally{btn.textContent="Оформить заказ";btn.disabled=!cart.length}
+};
+chips();grid();render();
+
+// ===== Авторизация =====
+const TG_BOT_ID="8887560505"; // ID вашего бота прописан сюда
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand()}catch(e){}}
+const tgUser=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+let user=null;
+try{user=JSON.parse(localStorage.getItem("velori_user")||"null")}catch(e){}
+const gerr=m=>{$("gerr").textContent=m||""};
+function setUser(u){user=u;try{u?localStorage.setItem("velori_user",JSON.stringify(u)):localStorage.removeItem("velori_user")}catch(e){}renderUser()}
+function renderUser(){
+ const ok=user&&user.phone;
+ document.body.classList.toggle("locked",!ok);
+ $("gs1").style.display=user?"none":"grid";
+ $("gs2").style.display=user&&!user.phone?"grid":"none";
+ $("gh").textContent=user&&!user.phone?"Ваш номер телефона":"Добро пожаловать";
+ $("gsub").textContent=user&&!user.phone?"Он нужен, чтобы мы связались с вами по заказу":"Войдите через Telegram, чтобы смотреть каталог и оформлять заказы";
+ $("gshare").style.display=(tgUser&&tg.requestContact)?"flex":"none";
+ $("uname").textContent=user?user.name:"Войти";
+ $("uava").textContent=user?user.name.charAt(0).toUpperCase():"?";
+ if(user){if(ok)gerr("");if(!$("nm").value)$("nm").value=user.name;if(user.phone&&!$("ph").value)$("ph").value=user.phone;$("pname").textContent=user.name;$("pinfo").textContent=user.id+(user.phone?" · "+user.phone:"")}
+}
+const tgName=u=>u.first_name+(u.last_name?" "+u.last_name:"");
+const tgId=u=>u.username?"@"+u.username:"ID "+u.id;
+$("gt").onclick=()=>{
+ gerr("");
+ if(tgUser)return setUser({name:tgName(tgUser),id:tgId(tgUser),src:"Telegram"});
+ if(!TG_BOT_ID)return gerr("Вход через Telegram ещё не настроен");
+ if(!window.Telegram||!Telegram.Login)return gerr("Не удалось загрузить Telegram. Проверьте интернет.");
+ Telegram.Login.auth({bot_id:TG_BOT_ID,request_access:"write"},d=>{
+  if(!d)return gerr("Вход через Telegram отменён");
+  setUser({name:tgName(d),id:tgId(d),src:"Telegram"});
+ });
+};
+
+function normPhone(v){let d=String(v).replace(/\D/g,"");if(d.length===9)d="998"+d;return d.length>=11&&d.length<=15?"+"+d:null}
+function savePhone(v){const n=normPhone(v);if(!n)return gerr("Введите номер полностью, например +998 90 123 45 67");gerr("");setUser({...user,phone:n})}
+$("gsave").onclick=()=>savePhone($("gphone").value);
+$("gphone").onkeydown=e=>{if(e.key==="Enter")savePhone($("gphone").value)};
+$("gshare").onclick=()=>{
+ gerr("");
+ const h=e=>{
+  tg.offEvent("contactRequested",h);
+  let r=e&&e.responseUnsafe;
+  try{if(typeof r==="string"){const c=new URLSearchParams(r).get("contact");r=c?{contact:JSON.parse(c)}:null}}catch(x){r=null}
+  const c=r&&r.contact;
+  if(c&&c.phone_number)savePhone(c.phone_number);
+  else if(e&&e.status==="sent")gerr("Номер отправлен, но приложение его не получило. Введите вручную.");
+  else gerr("Вы не поделились номером. Введите вручную.");
+ };
+ tg.onEvent("contactRequested",h);
+ tg.requestContact(()=>{});
+};
+$("ubtn").onclick=()=>{if(user)$("profov").classList.add("open")};
+$("pclose").onclick=()=>$("profov").classList.remove("open");
+$("profov").onclick=e=>{if(e.target===$("profov"))$("profov").classList.remove("open")};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("profov").classList.remove("open")});
+$("logout").onclick=()=>{$("ph").value="";$("profov").classList.remove("open");$("cart").classList.remove("open");$("nm").value="";setUser(null)};
+if(tgUser&&!user)setUser({name:tgName(tgUser),id:tgId(tgUser),src:"Telegram"});else renderUser();
+</script>
+</body>
+</html>
