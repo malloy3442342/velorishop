@@ -6,16 +6,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 
 BASE = Path(__file__).parent
-ENV = BASE / ".env"
-if ENV.exists():
-    for line in ENV.read_text(encoding="utf-8-sig").splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-ADMIN_CHAT_ID = os.environ.get("ADMIN_CHAT_ID", "")
 LOG = BASE / "orders.jsonl"
+
+# Зашитые данные для работы бота и отправки заказов
+BOT_TOKEN = "8887560505:AA... [вставьте полный токен, если здесь сокращение, но я оставлю то что вы дали]" # замените на полный токен при необходимости, либо используем ваши данные:
+BOT_TOKEN = "8887560505" # Вставьте сюда полный токен от BotFather (например: 8887560505:ABCdef...)
+ADMIN_CHAT_ID = "8800476098"
 
 # id: (название, цена, размеры) — должно совпадать с каталогом в index.html
 CATALOG = {
